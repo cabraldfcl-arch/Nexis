@@ -1,0 +1,42 @@
+# dependencies
+node_modules/
+
+# next
+.next/
+.next-analyze/
+out/
+
+# production
+build/
+dist/
+
+# testing
+coverage/
+playwright-report/
+test-results/
+tests/e2e/.tmp/
+.playwright-cli/
+.playwright-mcp/
+*.tsbuildinfo
+
+# env
+.env
+.env.*
+!.env.example
+
+# logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# local data
+*.sqlite
+*.sqlite3
+*.db
+*.db-journal
+
+/lib/generated/prisma
+
+# Arquivos antigos/pesados fora do Git
+ARQUIVOS_MORTOS/

@@ -1,0 +1,263 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+enum ProductUnit {
+  UNIT
+  KG
+  GRAM
+  LITER
+  METER
+  SQUARE_METER
+  CUBIC_METER
+  BOX
+  SACK
+  BALE
+  PACKAGE
+  DOZEN
+}
+
+enum ExpenseCategory {
+  MERCHANDISE_SUPPLIES
+  RENT
+  UTILITIES
+  TRANSPORT_LOGISTICS
+  PACKAGING_MATERIAL
+  MAINTENANCE
+  TAXES_FEES
+  LABOR
+  MARKETING
+  LOSS_WASTE
+  OTHER
+  // Legacy values kept so older local demo rows remain readable.
+  ENERGY
+  WATER
+  INTERNET
+  TRANSPORT
+  PACKAGING
+  TAX
+}
+
+enum StockMovementType {
+  PURCHASE
+  SALE
+  ADJUSTMENT
+  LOSS
+  REVERSAL
+}
+
+enum EntryOrigin {
+  MANUAL
+  ASSISTANT_TEXT
+  ASSISTANT_AI
+  VOICE_FUTURE
+  IMPORT
+}
+
+enum ProductAliasSource {
+  MANUAL
+  AI_CONFIRMED
+  IMPORT
+}
+
+enum CancellationTargetType {
+  SALE
+  PURCHASE
+  EXPENSE
+  STOCK_LOSS
+}
+
+model Product {
+  id             String          @id @default(cuid())
+  name           String
+  normalizedName String          @unique
+  category       String?
+  unit           ProductUnit     @default(UNIT)
+  unitCostCents  Int
+  salePriceCents Int
+  currentStock   Decimal         @default(0)
+  minimumStock   Decimal         @default(0)
+  active         Boolean         @default(true)
+  origin         EntryOrigin     @default(MANUAL)
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+
+  aliases        ProductAlias[]
+  purchases      Purchase[]
+  saleItems      SaleItem[]
+  stockLosses    StockLoss[]
+  stockMovements StockMovement[]
+
+  @@index([active])
+  @@index([name])
+}
+
+model ProductAlias {
+  id              String             @id @default(cuid())
+  productId       String
+  alias           String
+  normalizedAlias String             @unique
+  source          ProductAliasSource @default(MANUAL)
+  createdAt       DateTime           @default(now())
+
+  product         Product            @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@index([productId])
+  @@index([normalizedAlias])
+}
+
+model Purchase {
+  id             String          @id @default(cuid())
+  productId      String
+  quantity       Decimal
+  unitCostCents  Int
+  totalCostCents Int
+  supplier       String?
+  origin         EntryOrigin     @default(MANUAL)
+  purchasedAt    DateTime        @default(now())
+  createdAt      DateTime        @default(now())
+  cancelledAt    DateTime?
+  cancellationReason String?
+
+  product        Product         @relation(fields: [productId], references: [id], onDelete: Restrict)
+  cancellationEvents CancellationEvent[]
+  stockMovements StockMovement[]
+
+  @@index([productId])
+  @@index([purchasedAt])
+  @@index([cancelledAt])
+}
+
+model Sale {
+  id               String     @id @default(cuid())
+  totalAmountCents Int
+  origin           EntryOrigin @default(MANUAL)
+  soldAt           DateTime   @default(now())
+  createdAt        DateTime   @default(now())
+  cancelledAt      DateTime?
+  cancellationReason String?
+
+  items            SaleItem[]
+  cancellationEvents CancellationEvent[]
+
+  @@index([soldAt])
+  @@index([cancelledAt])
+}
+
+model SaleItem {
+  id                    String          @id @default(cuid())
+  saleId                String
+  productId             String
+  quantity              Decimal
+  unitPriceCents        Int
+  unitCostSnapshotCents Int
+  totalAmountCents      Int
+  totalCostCents        Int
+
+  sale                  Sale            @relation(fields: [saleId], references: [id], onDelete: Cascade)
+  product               Product         @relation(fields: [productId], references: [id], onDelete: Restrict)
+  stockMovements        StockMovement[]
+
+  @@index([saleId])
+  @@index([productId])
+}
+
+model Expense {
+  id          String          @id @default(cuid())
+  description String
+  category    ExpenseCategory @default(OTHER)
+  amountCents Int
+  paidAt      DateTime        @default(now())
+  confirmed   Boolean         @default(true)
+  origin      EntryOrigin     @default(MANUAL)
+  createdAt   DateTime        @default(now())
+  cancelledAt DateTime?
+  cancellationReason String?
+
+  stockLoss   StockLoss?
+  cancellationEvents CancellationEvent[]
+
+  @@index([paidAt])
+  @@index([confirmed])
+  @@index([category])
+  @@index([cancelledAt])
+}
+
+model StockLoss {
+  id                    String          @id @default(cuid())
+  productId             String
+  quantity              Decimal
+  unitCostSnapshotCents Int
+  totalCostCents        Int
+  reason                String
+  expenseId             String?         @unique
+  origin                EntryOrigin     @default(MANUAL)
+  lostAt                DateTime        @default(now())
+  createdAt             DateTime        @default(now())
+  cancelledAt           DateTime?
+  cancellationReason    String?
+
+  product               Product         @relation(fields: [productId], references: [id], onDelete: Restrict)
+  expense               Expense?        @relation(fields: [expenseId], references: [id], onDelete: SetNull)
+  stockMovements        StockMovement[]
+  cancellationEvents    CancellationEvent[]
+
+  @@index([productId])
+  @@index([lostAt])
+  @@index([cancelledAt])
+}
+
+model CancellationEvent {
+  id          String                 @id @default(cuid())
+  targetType  CancellationTargetType
+  reason      String
+  origin      EntryOrigin            @default(MANUAL)
+  createdAt   DateTime               @default(now())
+  saleId      String?
+  purchaseId  String?
+  expenseId   String?
+  stockLossId String?
+
+  sale        Sale?                  @relation(fields: [saleId], references: [id], onDelete: SetNull)
+  purchase    Purchase?              @relation(fields: [purchaseId], references: [id], onDelete: SetNull)
+  expense     Expense?               @relation(fields: [expenseId], references: [id], onDelete: SetNull)
+  stockLoss   StockLoss?             @relation(fields: [stockLossId], references: [id], onDelete: SetNull)
+  stockMovements StockMovement[]
+
+  @@index([targetType])
+  @@index([saleId])
+  @@index([purchaseId])
+  @@index([expenseId])
+  @@index([stockLossId])
+}
+
+model StockMovement {
+  id         String            @id @default(cuid())
+  productId  String
+  type       StockMovementType
+  quantity   Decimal
+  reason     String
+  purchaseId String?
+  saleItemId String?
+  stockLossId String?
+  cancellationEventId String?
+  origin     EntryOrigin       @default(MANUAL)
+  createdAt  DateTime          @default(now())
+
+  product    Product           @relation(fields: [productId], references: [id], onDelete: Restrict)
+  purchase   Purchase?         @relation(fields: [purchaseId], references: [id], onDelete: SetNull)
+  saleItem   SaleItem?         @relation(fields: [saleItemId], references: [id], onDelete: SetNull)
+  stockLoss  StockLoss?        @relation(fields: [stockLossId], references: [id], onDelete: SetNull)
+  cancellationEvent CancellationEvent? @relation(fields: [cancellationEventId], references: [id], onDelete: SetNull)
+
+  @@index([productId])
+  @@index([type])
+  @@index([purchaseId])
+  @@index([saleItemId])
+  @@index([stockLossId])
+  @@index([cancellationEventId])
+}

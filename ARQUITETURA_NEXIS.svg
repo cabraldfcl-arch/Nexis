@@ -1,0 +1,302 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1060" viewBox="0 0 1600 1060" role="img" aria-labelledby="title desc">
+  <title id="title">Arquitetura atual do sistema NEXIS</title>
+  <desc id="desc">Diagrama da arquitetura atual do NEXIS: Next.js App Router, Server Actions, regras financeiras deterministicas, Prisma, SQLite local, IA assistida, audio experimental, testes e caminho de preview.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#f7fbf7"/>
+      <stop offset="46%" stop-color="#eef7f5"/>
+      <stop offset="100%" stop-color="#fff7ed"/>
+    </linearGradient>
+    <linearGradient id="hero" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#0f766e"/>
+      <stop offset="50%" stop-color="#2563eb"/>
+      <stop offset="100%" stop-color="#d97706"/>
+    </linearGradient>
+    <linearGradient id="uiGrad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#ecfeff"/>
+      <stop offset="100%" stop-color="#dbeafe"/>
+    </linearGradient>
+    <linearGradient id="serverGrad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#f0fdf4"/>
+      <stop offset="100%" stop-color="#dcfce7"/>
+    </linearGradient>
+    <linearGradient id="domainGrad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#fff7ed"/>
+      <stop offset="100%" stop-color="#ffedd5"/>
+    </linearGradient>
+    <linearGradient id="dbGrad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#fdf2f8"/>
+      <stop offset="100%" stop-color="#fae8ff"/>
+    </linearGradient>
+    <linearGradient id="qaGrad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#f8fafc"/>
+      <stop offset="100%" stop-color="#e0f2fe"/>
+    </linearGradient>
+    <filter id="softShadow" x="-20%" y="-20%" width="140%" height="150%">
+      <feDropShadow dx="0" dy="14" stdDeviation="16" flood-color="#0f172a" flood-opacity="0.14"/>
+    </filter>
+    <filter id="chipShadow" x="-20%" y="-20%" width="140%" height="150%">
+      <feDropShadow dx="0" dy="5" stdDeviation="7" flood-color="#0f172a" flood-opacity="0.12"/>
+    </filter>
+    <marker id="arrowTeal" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto" markerUnits="strokeWidth">
+      <path d="M2,2 L10,6 L2,10 Z" fill="#0f766e"/>
+    </marker>
+    <marker id="arrowBlue" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto" markerUnits="strokeWidth">
+      <path d="M2,2 L10,6 L2,10 Z" fill="#2563eb"/>
+    </marker>
+    <marker id="arrowAmber" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto" markerUnits="strokeWidth">
+      <path d="M2,2 L10,6 L2,10 Z" fill="#d97706"/>
+    </marker>
+    <style>
+      .bg { fill: url(#bg); }
+      .title { font: 800 46px Arial, Helvetica, sans-serif; fill: #0f172a; }
+      .subtitle { font: 500 20px Arial, Helvetica, sans-serif; fill: #475569; }
+      .sectionTitle { font: 800 24px Arial, Helvetica, sans-serif; fill: #0f172a; }
+      .sectionSub { font: 600 14px Arial, Helvetica, sans-serif; fill: #475569; }
+      .label { font: 700 17px Arial, Helvetica, sans-serif; fill: #0f172a; }
+      .small { font: 500 14px Arial, Helvetica, sans-serif; fill: #475569; }
+      .micro { font: 700 12px Arial, Helvetica, sans-serif; fill: #334155; }
+      .tiny { font: 600 11px Arial, Helvetica, sans-serif; fill: #64748b; }
+      .whiteText { fill: #ffffff; }
+      .box { stroke: rgba(15,23,42,0.12); stroke-width: 1.2; filter: url(#softShadow); }
+      .inner { fill: #ffffff; stroke: rgba(15,23,42,0.10); stroke-width: 1; }
+      .chip { fill: #ffffff; stroke: rgba(15,23,42,0.12); stroke-width: 1; filter: url(#chipShadow); }
+      .lineTeal { fill: none; stroke: #0f766e; stroke-width: 4; marker-end: url(#arrowTeal); }
+      .lineBlue { fill: none; stroke: #2563eb; stroke-width: 4; marker-end: url(#arrowBlue); }
+      .lineAmber { fill: none; stroke: #d97706; stroke-width: 4; marker-end: url(#arrowAmber); }
+      .lineSoft { fill: none; stroke: #94a3b8; stroke-width: 2.2; stroke-dasharray: 7 7; }
+      .pillText { font: 800 13px Arial, Helvetica, sans-serif; fill: #0f172a; }
+      .badgeText { font: 800 12px Arial, Helvetica, sans-serif; fill: #ffffff; }
+    </style>
+  </defs>
+
+  <rect class="bg" x="0" y="0" width="1600" height="1060"/>
+
+  <g transform="translate(72 44)">
+    <rect x="0" y="0" width="1456" height="118" rx="26" fill="#ffffff" opacity="0.92" filter="url(#softShadow)"/>
+    <rect x="0" y="0" width="12" height="118" rx="6" fill="url(#hero)"/>
+    <text class="title" x="42" y="52">NEXIS - Arquitetura Atual do Sistema</text>
+    <text class="subtitle" x="44" y="86">MVP financeiro mobile-first com regras deterministicas, Prisma + SQLite local e assistente com confirmacao antes de salvar</text>
+    <g transform="translate(1048 28)">
+      <rect width="354" height="64" rx="18" fill="#0f172a"/>
+      <text class="micro whiteText" x="24" y="26">Varredura atual: 2026-05-24</text>
+      <text class="tiny whiteText" x="24" y="46">Grafo MCP + package.json + Prisma schema + docs</text>
+    </g>
+  </g>
+
+  <g transform="translate(72 194)">
+    <rect class="box" x="0" y="0" width="250" height="672" rx="26" fill="#ffffff"/>
+    <text class="sectionTitle" x="28" y="42">Usuario</text>
+    <text class="sectionSub" x="28" y="66">Microempreendedor</text>
+
+    <g transform="translate(48 102)">
+      <rect x="0" y="0" width="154" height="292" rx="34" fill="#0f172a"/>
+      <rect x="14" y="18" width="126" height="256" rx="24" fill="#ffffff"/>
+      <rect x="36" y="34" width="82" height="6" rx="3" fill="#cbd5e1"/>
+      <rect x="28" y="58" width="98" height="26" rx="10" fill="#ccfbf1"/>
+      <rect x="28" y="96" width="98" height="42" rx="12" fill="#dbeafe"/>
+      <rect x="28" y="150" width="44" height="42" rx="12" fill="#fef3c7"/>
+      <rect x="82" y="150" width="44" height="42" rx="12" fill="#fce7f3"/>
+      <rect x="28" y="204" width="98" height="42" rx="12" fill="#dcfce7"/>
+    </g>
+
+    <g transform="translate(28 430)">
+      <rect class="inner" x="0" y="0" width="194" height="174" rx="18"/>
+      <text class="label" x="22" y="34">Operacoes</text>
+      <text class="small" x="22" y="64">Produto</text>
+      <text class="small" x="22" y="91">Compra</text>
+      <text class="small" x="22" y="118">Venda</text>
+      <text class="small" x="22" y="145">Despesa</text>
+    </g>
+    <g transform="translate(28 624)">
+      <rect x="0" y="0" width="194" height="30" rx="15" fill="#ecfeff" stroke="#67e8f9"/>
+      <text class="pillText" x="19" y="20">Web mobile-first</text>
+    </g>
+  </g>
+
+  <g transform="translate(358 194)">
+    <rect class="box" x="0" y="0" width="418" height="672" rx="26" fill="url(#uiGrad)"/>
+    <text class="sectionTitle" x="28" y="42">Interface e Rotas</text>
+    <text class="sectionSub" x="28" y="66">Next.js App Router + React + Tailwind</text>
+
+    <g transform="translate(28 98)">
+      <rect class="inner" x="0" y="0" width="362" height="94" rx="18"/>
+      <rect x="18" y="18" width="54" height="54" rx="16" fill="#0f766e"/>
+      <text class="badgeText" x="34" y="51">/</text>
+      <text class="label" x="92" y="35">Home / Dashboard</text>
+      <text class="small" x="92" y="60">Indicadores reais, acoes rapidas</text>
+      <text class="tiny" x="92" y="79">app/page.tsx</text>
+    </g>
+
+    <g transform="translate(28 212)">
+      <rect class="inner" x="0" y="0" width="170" height="88" rx="18"/>
+      <rect x="18" y="18" width="44" height="44" rx="14" fill="#2563eb"/>
+      <text class="badgeText" x="29" y="46">P</text>
+      <text class="label" x="78" y="35">Produtos</text>
+      <text class="small" x="78" y="60">CRUD</text>
+      <text class="tiny" x="78" y="78">/products</text>
+    </g>
+    <g transform="translate(220 212)">
+      <rect class="inner" x="0" y="0" width="170" height="88" rx="18"/>
+      <rect x="18" y="18" width="44" height="44" rx="14" fill="#16a34a"/>
+      <text class="badgeText" x="29" y="46">C</text>
+      <text class="label" x="78" y="35">Compras</text>
+      <text class="small" x="78" y="60">Entrada</text>
+      <text class="tiny" x="78" y="78">/purchases</text>
+    </g>
+    <g transform="translate(28 320)">
+      <rect class="inner" x="0" y="0" width="170" height="88" rx="18"/>
+      <rect x="18" y="18" width="44" height="44" rx="14" fill="#d97706"/>
+      <text class="badgeText" x="29" y="46">V</text>
+      <text class="label" x="78" y="35">Vendas</text>
+      <text class="small" x="78" y="60">Saida</text>
+      <text class="tiny" x="78" y="78">/sales</text>
+    </g>
+    <g transform="translate(220 320)">
+      <rect class="inner" x="0" y="0" width="170" height="88" rx="18"/>
+      <rect x="18" y="18" width="44" height="44" rx="14" fill="#db2777"/>
+      <text class="badgeText" x="29" y="46">D</text>
+      <text class="label" x="78" y="35">Despesas</text>
+      <text class="small" x="78" y="60">Confirmadas</text>
+      <text class="tiny" x="78" y="78">/expenses</text>
+    </g>
+
+    <g transform="translate(28 430)">
+      <rect class="inner" x="0" y="0" width="362" height="118" rx="18"/>
+      <rect x="18" y="20" width="54" height="54" rx="16" fill="#7c3aed"/>
+      <text class="badgeText" x="32" y="53">AI</text>
+      <text class="label" x="92" y="37">Assistente texto-only</text>
+      <text class="small" x="92" y="62">Perguntas e rascunhos com revisao</text>
+      <text class="tiny" x="92" y="84">/assistant | nada salva sem confirmar</text>
+      <rect x="92" y="93" width="224" height="16" rx="8" fill="#ede9fe"/>
+    </g>
+
+    <g transform="translate(28 570)">
+      <rect x="0" y="0" width="362" height="54" rx="18" fill="#f8fafc" stroke="#cbd5e1"/>
+      <text class="micro" x="20" y="22">Audio experimental por flag</text>
+      <text class="tiny" x="20" y="40">NEXT_PUBLIC_AUDIO_INPUT_ENABLED=false por padrao</text>
+    </g>
+  </g>
+
+  <g transform="translate(828 194)">
+    <rect class="box" x="0" y="0" width="346" height="672" rx="26" fill="url(#serverGrad)"/>
+    <text class="sectionTitle" x="28" y="42">Servidor</text>
+    <text class="sectionSub" x="28" y="66">Server Actions + API Routes</text>
+
+    <g transform="translate(28 100)">
+      <rect class="inner" x="0" y="0" width="290" height="218" rx="18"/>
+      <text class="label" x="20" y="34">Actions transacionais</text>
+      <text class="small" x="20" y="66">createProductAction</text>
+      <text class="small" x="20" y="94">createPurchaseAction</text>
+      <text class="small" x="20" y="122">createSaleAction</text>
+      <text class="small" x="20" y="150">createExpenseAction</text>
+      <text class="tiny" x="20" y="181">Atualizam estoque, snapshots, totais</text>
+      <text class="tiny" x="20" y="201">e revalidam rotas apos salvar.</text>
+    </g>
+
+    <g transform="translate(28 342)">
+      <rect class="inner" x="0" y="0" width="290" height="158" rx="18"/>
+      <text class="label" x="20" y="34">Assistente server-side</text>
+      <text class="small" x="20" y="66">Parser local + fallback seguro</text>
+      <text class="small" x="20" y="94">IA externa opcional/desligada</text>
+      <text class="small" x="20" y="122">Confirmacao explicita</text>
+      <text class="tiny" x="20" y="144">AI_ASSISTANT_ENABLED=false</text>
+    </g>
+
+    <g transform="translate(28 524)">
+      <rect class="inner" x="0" y="0" width="290" height="96" rx="18"/>
+      <text class="label" x="20" y="34">API interna de audio</text>
+      <text class="small" x="20" y="62">/api/audio/transcribe</text>
+      <text class="tiny" x="20" y="82">Mock padrao; BetKol CPU ainda stub</text>
+    </g>
+  </g>
+
+  <g transform="translate(1228 194)">
+    <rect class="box" x="0" y="0" width="300" height="672" rx="26" fill="url(#domainGrad)"/>
+    <text class="sectionTitle" x="28" y="42">Dominio</text>
+    <text class="sectionSub" x="28" y="66">Regras puras e validacao</text>
+
+    <g transform="translate(24 98)">
+      <rect class="inner" x="0" y="0" width="252" height="124" rx="18"/>
+      <text class="label" x="18" y="32">Financeiro</text>
+      <text class="small" x="18" y="60">money, sales, profit</text>
+      <text class="small" x="18" y="86">reports, stock</text>
+      <text class="tiny" x="18" y="108">Lucro nunca depende de IA</text>
+    </g>
+
+    <g transform="translate(24 242)">
+      <rect class="inner" x="0" y="0" width="252" height="112" rx="18"/>
+      <text class="label" x="18" y="32">Transacoes</text>
+      <text class="small" x="18" y="60">buildPurchaseTransaction</text>
+      <text class="small" x="18" y="86">buildSaleTransaction</text>
+    </g>
+
+    <g transform="translate(24 374)">
+      <rect class="inner" x="0" y="0" width="252" height="112" rx="18"/>
+      <text class="label" x="18" y="32">Validacao Zod</text>
+      <text class="small" x="18" y="60">Produto, compra, venda</text>
+      <text class="small" x="18" y="86">despesa e rascunhos</text>
+    </g>
+
+    <g transform="translate(24 506)">
+      <rect class="inner" x="0" y="0" width="252" height="112" rx="18"/>
+      <text class="label" x="18" y="32">Resumo do dashboard</text>
+      <text class="small" x="18" y="60">periodos locais</text>
+      <text class="small" x="18" y="86">estoque baixo e KPIs</text>
+    </g>
+  </g>
+
+  <g transform="translate(358 904)">
+    <rect class="box" x="0" y="0" width="510" height="118" rx="26" fill="url(#dbGrad)"/>
+    <text class="sectionTitle" x="28" y="42">Persistencia</text>
+    <text class="sectionSub" x="28" y="66">Prisma Client 7 + @prisma/adapter-better-sqlite3</text>
+    <g transform="translate(330 24)">
+      <ellipse cx="78" cy="14" rx="76" ry="14" fill="#c026d3"/>
+      <rect x="2" y="14" width="152" height="48" fill="#c026d3"/>
+      <ellipse cx="78" cy="62" rx="76" ry="14" fill="#a21caf"/>
+      <text class="badgeText" x="36" y="43">SQLite local</text>
+    </g>
+    <text class="small" x="28" y="94">Modelos: Product, Purchase, Sale, SaleItem, Expense, StockMovement</text>
+  </g>
+
+  <g transform="translate(910 904)">
+    <rect class="box" x="0" y="0" width="618" height="118" rx="26" fill="url(#qaGrad)"/>
+    <text class="sectionTitle" x="28" y="42">Qualidade e entrega</text>
+    <text class="sectionSub" x="28" y="66">Scripts reais no package.json</text>
+    <g transform="translate(28 80)">
+      <rect class="chip" x="0" y="0" width="92" height="28" rx="14"/>
+      <text class="micro" x="17" y="19">ESLint</text>
+      <rect class="chip" x="104" y="0" width="106" height="28" rx="14"/>
+      <text class="micro" x="122" y="19">TypeScript</text>
+      <rect class="chip" x="222" y="0" width="82" height="28" rx="14"/>
+      <text class="micro" x="246" y="19">Vitest</text>
+      <rect class="chip" x="316" y="0" width="104" height="28" rx="14"/>
+      <text class="micro" x="335" y="19">Playwright</text>
+      <rect class="chip" x="432" y="0" width="112" height="28" rx="14"/>
+      <text class="micro" x="456" y="19">Vercel preview</text>
+    </g>
+  </g>
+
+  <g transform="translate(72 904)">
+    <rect class="box" x="0" y="0" width="250" height="118" rx="26" fill="#fff1f2"/>
+    <text class="sectionTitle" x="28" y="42">Fronteiras</text>
+    <text class="small" x="28" y="70">Telegram/n8n: historico</text>
+    <text class="small" x="28" y="94">Producao real: migrar DB</text>
+  </g>
+
+  <path class="lineTeal" d="M322 530 C344 530, 336 530, 356 530"/>
+  <path class="lineBlue" d="M776 530 C804 530, 800 530, 826 530"/>
+  <path class="lineAmber" d="M1174 530 C1200 530, 1198 530, 1226 530"/>
+  <path class="lineBlue" d="M1000 866 C1000 902, 742 882, 650 906"/>
+  <path class="lineTeal" d="M1004 866 C1004 898, 1128 880, 1208 906"/>
+  <path class="lineSoft" d="M1500 866 C1500 884, 1450 892, 1440 904"/>
+
+  <g transform="translate(778 126)">
+    <rect x="0" y="0" width="566" height="44" rx="22" fill="#ffffff" opacity="0.95" filter="url(#chipShadow)"/>
+    <text class="micro" x="24" y="28">Fluxo principal: Usuario -> UI -> Server Actions/API -> Regras/Zod -> Prisma -> SQLite -> Dashboard/Assistente</text>
+  </g>
+
+  <g transform="translate(72 876)">
+    <text class="tiny" x="0" y="-10">Observacao: SQLite local atende desenvolvimento/demo; deploy real precisa banco persistente como Supabase/Postgres.</text>
+  </g>
+</svg>

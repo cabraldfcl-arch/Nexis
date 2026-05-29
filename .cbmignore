@@ -1,0 +1,46 @@
+# codebase-memory-mcp — escopo NEXIS
+
+# Dependencias, build e caches
+node_modules/
+.next/
+.turbo/
+dist/
+build/
+coverage/
+__pycache__/
+*.tsbuildinfo
+
+# Segredos, bancos locais e estado privado
+.env
+.env.*
+!.env.example
+*.sqlite
+*.sqlite3
+*.db
+*.db-journal
+*.log
+cookies*
+*token*
+*secret*
+*credential*
+
+# Artefatos historicos/binarios que nao ajudam o grafo de codigo
+ARQUIVOS_MORTOS/
+.tools/
+FOTOS_NEXT_APRESENTACAO /
+*.pdf
+*.png
+*.jpg
+*.jpeg
+*.zip
+
+# Historico Telegram/n8n: referencia, nao centro do MVP
+integracao_telegram
+n8n_*.json
+n8n_workflow_*.json
+workflows_n8n_telegram_visual.md
+mvp_telegram_n8n_execucao.md
+modelo_fluxo_nodes_n8n.md
+base_artigo_cientifico_telegram_n8n.*
+apresentacao_feira_nexis.*
+INSTRUCOES GPT ORQUESTRADOR PROJETO /
