@@ -22,7 +22,10 @@
     "db:migrate": "prisma migrate dev",
     "db:seed": "prisma db seed",
     "db:reset-demo": "NEXIS_DEMO_RESET=1 DATABASE_URL=file:./dev.db node scripts/db/reset-demo.mjs",
-    "db:reset-empty": "NEXIS_EMPTY_RESET=1 DATABASE_URL=file:./dev.db node scripts/db/reset-empty.mjs"
+    "db:reset-empty": "NEXIS_EMPTY_RESET=1 DATABASE_URL=file:./dev.db node scripts/db/reset-empty.mjs",
+    "db:ensure-demo": "node scripts/db/ensure-demo.mjs",
+    "start:railway": "npm run db:ensure-demo && next start -H 0.0.0.0 -p ${PORT:-3000}",
+    "postinstall": "prisma generate"
   },
   "dependencies": {
     "@prisma/adapter-better-sqlite3": "^7.8.0",

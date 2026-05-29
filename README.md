@@ -42,13 +42,60 @@ O NEXIS tem manifest PWA, icones em `public/icons/`, `theme_color`, `display=sta
 4. No iPhone/Safari, use `Compartilhar` e depois `Adicionar a Tela de Inicio`.
 5. Abra pelo icone `NEXIS` e confirme que ele inicia em modo de app, sem depender de tela desktop.
 
-Preview na Vercel:
+## Deploy Railway (Demo Remota)
+
+O Railway roda o NEXIS como container Node.js com SQLite persistente em volume `/data`.
+
+Repositorio: `https://github.com/thiagocfaria/NEXT.git`
+
+Passos manuais no Railway:
+
+1. Criar novo projeto → "Deploy from GitHub repo" → selecionar `thiagocfaria/NEXT`.
+2. Aguardar o primeiro build detectar Next.js via nixpacks.
+3. Em "Settings → Variables", adicionar as variaveis abaixo.
+4. Em "Settings → Volumes", criar volume montado em `/data`.
+5. Aguardar o redeploy automatico apos salvar as variaveis.
+6. Acessar o link publico gerado pelo Railway.
+7. No celular: abrir o link, instalar como PWA pela opcao do navegador.
+
+Variaveis obrigatorias no Railway:
+
+```
+DATABASE_URL=file:/data/nexis-demo.db
+NEXT_PUBLIC_AUDIO_INPUT_ENABLED=false
+AUDIO_TRANSCRIPTION_PROVIDER=mock
+BETKOL_CPU_COMMAND=
+BETKOL_CPU_TIMEOUT_MS=10000
+AI_ASSISTANT_ENABLED=true
+AI_ASSISTANT_REVIEW_PASS_ENABLED=false
+AI_PROVIDER=openai-compatible
+AI_BASE_URL=https://api.groq.com/openai/v1
+AI_MODEL=llama-3.1-8b-instant
+AI_API_KEY=<sua_chave_groq>
+AI_TIMEOUT_MS=15000
+```
+
+`AI_API_KEY` e server-side e nunca deve ser `NEXT_PUBLIC`. Se a chave falhar, o app continua com o parser rule-based.
+
+Comportamento do startup:
+
+- `npm run start:railway` roda `db:ensure-demo` antes de iniciar o Next.js.
+- `db:ensure-demo` aplica migrations (`prisma migrate deploy`) e carrega seed somente se o banco estiver vazio.
+- Reinicializacoes nao apagam dados — o seed e ignorado se ja houver produtos.
+
+Limites da demo:
+
+- Nao e producao real: falta autenticacao, multiempresa e backup.
+- SQLite em volume Railway e adequado para demo; para producao real migrar para Postgres/Supabase.
+- Dados ficticios sao carregados automaticamente no primeiro boot.
+
+Preview na Vercel (alternativa sem SQLite persistente):
 
 1. Crie/importa o projeto como `Next.js`.
 2. Use build command `npm run build`.
 3. Mantenha `AI_ASSISTANT_ENABLED=false` e nao configure chave real em preview publico.
-4. Use o preview para validar UI/PWA e roteiro de demo; SQLite local nao e persistencia real em Vercel/serverless.
-5. Para producao real, migrar antes para Postgres/Supabase, auth e separacao por usuario/empresa.
+4. Use o preview para validar UI/PWA; SQLite nao e persistente em Vercel serverless.
+5. Para producao real, migrar para Postgres/Supabase, auth e separacao por usuario/empresa.
 
 ## Comandos
 

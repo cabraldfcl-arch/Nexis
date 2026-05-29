@@ -58,7 +58,7 @@ Abrir e instalar no celular:
 
 ## Variaveis de Ambiente
 
-Demo local texto-only:
+Demo local texto-only (sem IA):
 
 ```env
 DATABASE_URL="file:./dev.db"
@@ -67,12 +67,23 @@ AUDIO_TRANSCRIPTION_PROVIDER="mock"
 BETKOL_CPU_COMMAND=""
 BETKOL_CPU_TIMEOUT_MS="10000"
 AI_ASSISTANT_ENABLED="false"
-AI_PROVIDER=""
-AI_BASE_URL=""
-AI_MODEL=""
+AI_ASSISTANT_REVIEW_PASS_ENABLED="false"
+AI_PROVIDER="openai-compatible"
+AI_BASE_URL="https://api.groq.com/openai/v1"
+AI_MODEL="llama-3.1-8b-instant"
 AI_API_KEY=""
-AI_TIMEOUT_MS="12000"
+AI_TIMEOUT_MS="15000"
 ```
+
+Railway demo com IA (via painel, nunca versionar):
+
+```env
+DATABASE_URL=file:/data/nexis-demo.db
+AI_ASSISTANT_ENABLED=true
+AI_API_KEY=<chave_real_groq>
+```
+
+(as demais variaveis seguem o mesmo padrao do exemplo local)
 
 Regras:
 
@@ -80,6 +91,7 @@ Regras:
 - `AI_API_KEY` e server-side; nunca usar `NEXT_PUBLIC`.
 - nao usar dados reais de cliente em demo.
 - nao colar chave real em chat, docs ou logs.
+- com `AI_API_KEY` vazio, o assistant usa parser rule-based sem erro.
 
 ## Roteiro de Demonstracao
 
@@ -352,26 +364,72 @@ Para ligar STT real futuramente:
 4. manter confirmacao manual antes de persistir;
 5. criar testes e atualizar `docs/PROJECT_STATE.md`.
 
-## Preview e Deploy
+## Deploy Railway (Demo Remota com SQLite)
 
-O projeto esta preparado para build local e preview demonstrativo, mas SQLite local nao e persistencia real em Vercel/serverless.
+Repositorio: `https://github.com/thiagocfaria/NEXT.git`
 
-Build:
+O Railway detecta Next.js via nixpacks, compila modulos nativos (`better-sqlite3`) e roda como container persistente. SQLite em volume `/data` sobrevive a reinicializacoes.
+
+Passos manuais:
+
+1. Acessar railway.app → "New Project" → "Deploy from GitHub repo".
+2. Selecionar `thiagocfaria/NEXT` e aguardar o primeiro build.
+3. Em "Settings → Variables", adicionar as variaveis da secao abaixo.
+4. Em "Settings → Volumes", criar volume montado em `/data`.
+5. Aguardar redeploy apos salvar variaveis.
+6. Acessar o link publico gerado.
+
+Variaveis no Railway:
+
+```env
+DATABASE_URL=file:/data/nexis-demo.db
+NEXT_PUBLIC_AUDIO_INPUT_ENABLED=false
+AUDIO_TRANSCRIPTION_PROVIDER=mock
+BETKOL_CPU_COMMAND=
+BETKOL_CPU_TIMEOUT_MS=10000
+AI_ASSISTANT_ENABLED=true
+AI_ASSISTANT_REVIEW_PASS_ENABLED=false
+AI_PROVIDER=openai-compatible
+AI_BASE_URL=https://api.groq.com/openai/v1
+AI_MODEL=llama-3.1-8b-instant
+AI_API_KEY=<chave_groq_real>
+AI_TIMEOUT_MS=15000
+```
+
+Chave Groq gratuita: https://console.groq.com
+
+Regras de seguranca:
+
+- `AI_API_KEY` e server-side; nunca usar `NEXT_PUBLIC_AI_API_KEY`.
+- `.env` e `.env.local` nao devem ser versionados.
+- Volume `/data` contem o banco SQLite; nao deve ser exposto publicamente.
+- Se `AI_API_KEY` falhar ou estiver vazio, o assistant usa parser rule-based automaticamente.
+
+Startup (automatico, via `npm run start:railway`):
+
+1. `db:ensure-demo`: cria `/data` se necessario, aplica `prisma migrate deploy`, verifica contagem de produtos.
+2. Se banco vazio: carrega seed de 4 produtos, 4 compras, 3 vendas e 4 despesas ficticias.
+3. Se banco nao vazio: ignora seed (nao destrói dados existentes).
+4. `next start -H 0.0.0.0 -p $PORT`: inicia o servidor.
+
+Testar startup localmente (banco temporario):
+
+```bash
+DATABASE_URL=file:/tmp/nexis-test.db npm run db:ensure-demo
+```
+
+Build local:
 
 ```bash
 npm run build
 ```
 
-Preview Vercel recomendado:
+Preview Vercel (sem SQLite persistente):
 
 1. Framework `Next.js`.
 2. Build command `npm run build`.
-3. Variaveis sem chave real:
-   - `NEXT_PUBLIC_AUDIO_INPUT_ENABLED=false`
-   - `AUDIO_TRANSCRIPTION_PROVIDER=mock`
-   - `AI_ASSISTANT_ENABLED=false`
-   - placeholders vazios para `AI_PROVIDER`, `AI_BASE_URL`, `AI_MODEL`, `AI_API_KEY`
-4. Nao tratar `DATABASE_URL=file:./dev.db` como banco de producao.
+3. `AI_ASSISTANT_ENABLED=false`, sem chave real.
+4. SQLite nao persiste em Vercel serverless; usar apenas para validar UI/PWA.
 
 Producao real exige:
 
