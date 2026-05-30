@@ -1,6 +1,6 @@
 # Runbook do NEXIS
 
-Ultima atualizacao: 2026-05-28
+Ultima atualizacao: 2026-05-30
 
 ## Demo Local
 
@@ -366,20 +366,27 @@ Para ligar STT real futuramente:
 
 ## Deploy Railway (Demo Remota com SQLite)
 
-Repositorio: `https://github.com/thiagocfaria/NEXT.git`
+Deploy demonstrativo ativo em 2026-05-30.
 
-O Railway detecta Next.js via nixpacks, compila modulos nativos (`better-sqlite3`) e roda como container persistente. SQLite em volume `/data` sobrevive a reinicializacoes.
+- **Repositorio:** https://github.com/thiagocfaria/NEXT
+- **URL publica:** https://next-production-d7d8.up.railway.app
+- **Projeto Railway:** `appealing-gratitude` / servico `NEXT` / ambiente `production` / regiao `US West`
+- **Builder:** Dockerfile com `node:24-bookworm-slim` (Nixpacks foi descartado — nao suportava nodejs_24)
+- **Porta publica:** dominio Railway configurado para porta `8080`
+- **Banco:** SQLite em volume `/data` como `nexis-demo.db`
+- **IA:** Groq (llama-3.1-8b-instant) por texto, com fallback rule-based automatico
 
-Passos manuais:
+Para recriar o deploy do zero:
 
 1. Acessar railway.app → "New Project" → "Deploy from GitHub repo".
-2. Selecionar `thiagocfaria/NEXT` e aguardar o primeiro build.
-3. Em "Settings → Variables", adicionar as variaveis da secao abaixo.
-4. Em "Settings → Volumes", criar volume montado em `/data`.
-5. Aguardar redeploy apos salvar variaveis.
-6. Acessar o link publico gerado.
+2. Selecionar `thiagocfaria/NEXT` — Railway le `railway.json` e usa o `Dockerfile`.
+3. Em **Settings → Variables**, adicionar as variaveis abaixo (sem valor real de AI_API_KEY no versionamento).
+4. Em **Settings → Volumes**, criar volume montado em **`/data`** — obrigatorio para persistencia do SQLite.
+5. Em **Settings → Networking**, gerar dominio publico e configurar para porta **`8080`**.
+6. Aguardar redeploy automatico apos salvar variaveis.
+7. Acessar a URL publica e validar no celular.
 
-Variaveis no Railway:
+Variaveis configuradas no Railway (AI_API_KEY configurada via painel, sem versionar):
 
 ```env
 DATABASE_URL=file:/data/nexis-demo.db
@@ -392,8 +399,9 @@ AI_ASSISTANT_REVIEW_PASS_ENABLED=false
 AI_PROVIDER=openai-compatible
 AI_BASE_URL=https://api.groq.com/openai/v1
 AI_MODEL=llama-3.1-8b-instant
-AI_API_KEY=<chave_groq_real>
+AI_API_KEY=<configurar_via_painel_railway>
 AI_TIMEOUT_MS=15000
+NIXPACKS_NODE_VERSION=24
 ```
 
 Chave Groq gratuita: https://console.groq.com
@@ -402,15 +410,25 @@ Regras de seguranca:
 
 - `AI_API_KEY` e server-side; nunca usar `NEXT_PUBLIC_AI_API_KEY`.
 - `.env` e `.env.local` nao devem ser versionados.
-- Volume `/data` contem o banco SQLite; nao deve ser exposto publicamente.
+- Volume `/data` contem o banco SQLite; nao expor publicamente.
 - Se `AI_API_KEY` falhar ou estiver vazio, o assistant usa parser rule-based automaticamente.
 
 Startup (automatico, via `npm run start:railway`):
 
-1. `db:ensure-demo`: cria `/data` se necessario, aplica `prisma migrate deploy`, verifica contagem de produtos.
+1. `db:ensure-demo`: cria `/data` se necessario, aplica `prisma migrate deploy`, conta produtos.
 2. Se banco vazio: carrega seed de 4 produtos, 4 compras, 3 vendas e 4 despesas ficticias.
-3. Se banco nao vazio: ignora seed (nao destrói dados existentes).
-4. `next start -H 0.0.0.0 -p $PORT`: inicia o servidor.
+3. Se banco nao vazio: ignora seed — dados existentes sao preservados.
+4. `next start -H 0.0.0.0 -p $PORT`: inicia o servidor na porta injetada pelo Railway.
+
+Validacao no celular apos deploy:
+
+1. Abrir https://next-production-d7d8.up.railway.app no Chrome (Android) ou Safari (iOS).
+2. No Android/Chrome: tocar em `Instalar app` ou `Adicionar a tela inicial`.
+3. No iOS/Safari: `Compartilhar` → `Adicionar a Tela de Inicio`.
+4. Abrir pelo icone NEXT e confirmar que abre sem barra do navegador (modo standalone).
+5. Navegar por `/`, `/products`, `/sales`, `/purchases`, `/expenses`, `/assistant`.
+6. Digitar no assistant: `quanto vendi hoje?` e `qual meu estoque atual?`.
+7. Confirmar que rascunhos de venda/compra/despesa exigem botao de confirmacao.
 
 Testar startup localmente (banco temporario):
 
@@ -424,17 +442,10 @@ Build local:
 npm run build
 ```
 
-Preview Vercel (sem SQLite persistente):
-
-1. Framework `Next.js`.
-2. Build command `npm run build`.
-3. `AI_ASSISTANT_ENABLED=false`, sem chave real.
-4. SQLite nao persiste em Vercel serverless; usar apenas para validar UI/PWA.
-
 Producao real exige:
 
 - Postgres/Supabase;
-- auth;
+- autenticacao;
 - separacao por usuario/empresa;
 - backup/exportacao;
 - logs sanitizados;

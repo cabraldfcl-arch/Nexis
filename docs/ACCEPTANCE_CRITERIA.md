@@ -1,6 +1,6 @@
 # Criterios de Aceite do NEXIS
 
-Ultima atualizacao: 2026-05-29
+Ultima atualizacao: 2026-05-30
 
 ## MVP Demonstravel Atual
 
@@ -74,6 +74,19 @@ Qualidade:
 - [x] E2E mobile valida manifest PWA e ausencia de overflow horizontal nas rotas principais.
 - [x] Seed demo ficticia.
 - [x] Reset demo local.
+
+Deploy demonstrativo (validado em 2026-05-30):
+
+- [x] Repositorio GitHub publicado: https://github.com/thiagocfaria/NEXT
+- [x] Deploy Railway ativo: https://next-production-d7d8.up.railway.app
+- [x] App abre pelo link publico sem necessidade de mesma rede Wi-Fi.
+- [x] Chat `Falar com NEXIS` testado e funcionando na URL publica.
+- [x] PWA instalavel pelo Chrome (botao "Instalar" confirmado na URL publica).
+- [x] SQLite persistente em volume `/data` no Railway.
+- [x] IA externa Groq configurada via painel Railway sem versionar chave.
+- [x] Fallback rule-based ativo caso IA externa falhe.
+- [ ] Icones PWA PNG 192x192 e 512x512 para iOS (pendente — somente SVG disponivel).
+- [ ] Validacao de instalacao no iOS/Safari (pendente).
 
 ## MVP Operacional Real
 

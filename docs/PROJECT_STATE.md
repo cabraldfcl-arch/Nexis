@@ -950,9 +950,49 @@ Validacao direcionada ja executada nesta rodada:
 - `npx vitest run tests/ai/assistant-human-fuzz-corpus.test.ts`: passou com 132 testes.
 - `npx playwright test tests/e2e/assistant-human-business-flow.spec.ts`: passou com 7 testes mobile Chromium.
 
+## Atualizacao - Deploy Railway Demo
+
+Data: 2026-05-30.
+
+Estado novo:
+
+- repositorio GitHub criado e publicado em https://github.com/thiagocfaria/NEXT;
+- deploy Railway ativo em https://next-production-d7d8.up.railway.app;
+- projeto Railway `appealing-gratitude`, servico `NEXT`, ambiente `production`, regiao `US West`;
+- builder trocado de Nixpacks para Dockerfile com `node:24-bookworm-slim` (Nixpacks nao suportava nodejs_24);
+- `Dockerfile` criado com `python3`, `make`, `g++`, `libsqlite3-dev` para compilar `better-sqlite3` nativo;
+- `railway.json` atualizado para `builder: DOCKERFILE`;
+- `.dockerignore` criado excluindo `node_modules`, `.next`, `.env*`, `*.db`, `ARQUIVOS_MORTOS`;
+- `.node-version` e `.nvmrc` com `24` criados; `engines.node >=24.0.0` adicionado ao `package.json`;
+- script `db:ensure-demo` criado: aplica `prisma migrate deploy` e carrega seed somente se banco vazio;
+- script `start:railway` criado: roda `db:ensure-demo` e `next start -H 0.0.0.0 -p $PORT`;
+- `postinstall: prisma generate` adicionado ao `package.json`;
+- dominio publico Railway configurado na porta `8080`;
+- volume Railway montado em `/data` para persistencia do SQLite;
+- banco inicializado como `file:/data/nexis-demo.db` com 4 produtos, 4 compras, 3 vendas e 4 despesas ficticias;
+- IA externa Groq (llama-3.1-8b-instant) configurada via painel Railway; fallback rule-based continua ativo;
+- chat `Falar com NEXIS` testado e funcionando na URL publica;
+- PWA instalavel via Chrome na URL publica (botao "Instalar" apareceu no teste);
+- `.env.example` atualizado com placeholders Railway/Groq;
+- `README.md` e `docs/RUNBOOK.md` documentam URL publica, variaveis, volume e roteiro de validacao;
+- nenhuma regra financeira, schema Prisma, logica de IA ou tela foi alterada.
+
+Limites do deploy atual:
+
+- sem autenticacao: qualquer pessoa com o link acessa;
+- sem multiempresa: banco unico compartilhado na demo;
+- sem backup automatico: volume Railway e suficiente para demo, nao para producao real;
+- icones PWA somente em SVG: iOS Safari pode nao exibir icone corretamente na tela inicial;
+- SQLite em `/data` adequado para demo; producao real exige Postgres/Supabase.
+
+Nao executado nesta rodada (apenas docs/config):
+
+- `npm run test` nao foi executado; codigo de negocio nao foi alterado; ultima execucao passou com 481 testes.
+- `npm run e2e` nao foi executado; UI nao foi alterada.
+
 ## Proxima Ordem Recomendada
 
-1. Publicar um preview demonstrativo na Vercel e testar instalacao/adicao a tela inicial em Android e iOS reais.
+1. Validar demo no celular real pelo link publico e instalar como PWA.
 2. Implementar pro-labore, despesas fixas mensais e metas.
 3. Implementar servicos sem estoque.
 4. Criar tela/manual de historico e auditoria para perdas e cancelamentos ja persistidos.

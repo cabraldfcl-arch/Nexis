@@ -1,8 +1,14 @@
-# NEXIS
+# NEXT — NEXIS
 
 NEXIS e um gestor financeiro mobile-first com IA assistida para microempreendedores e pequenos comerciantes. O foco do MVP e registrar produtos, compras, vendas, estoque, despesas e lucro com linguagem simples, sem depender de planilhas ou ERP complexo.
 
-Estado atual em 2026-05-29: o projeto esta demonstravel localmente em modo texto-only e preparado como PWA basico para demo mobile instalavel. O assistant ja cobre cadastro, compra, venda, despesa, perda, cancelamento rastreavel, perguntas financeiras, embalagem comercial, kg/grama/litro, ambiguidade e confirmacao por botao em testes automatizados. Ele ainda nao esta pronto para producao real com usuarios finais porque faltam banco persistente de producao, autenticacao, multiempresa, correcao granular, servicos sem estoque, pro-labore, despesas fixas mensais, fluxo de caixa projetado seguro e voz/STT real.
+**Repositorio:** https://github.com/thiagocfaria/NEXT
+
+**Demo remota (Railway):** https://next-production-d7d8.up.railway.app
+
+A demo remota esta ativa, acessivel por link publico e pode ser instalada como PWA pelo Chrome. Nao e producao real: sem autenticacao, sem multiempresa e sem backup. Use somente dados ficticios.
+
+Estado atual em 2026-05-30: deploy demonstrativo Railway funcionando com SQLite em volume `/data`, IA externa Groq por texto e PWA instalavel. O assistant ja cobre cadastro, compra, venda, despesa, perda, cancelamento rastreavel, perguntas financeiras, embalagem comercial, kg/grama/litro, ambiguidade e confirmacao por botao em testes automatizados. Ele ainda nao esta pronto para producao real com usuarios finais porque faltam banco persistente de producao, autenticacao, multiempresa, correcao granular, servicos sem estoque, pro-labore, despesas fixas mensais, fluxo de caixa projetado seguro e voz/STT real.
 
 ## Rodar Localmente
 
@@ -44,19 +50,22 @@ O NEXIS tem manifest PWA, icones em `public/icons/`, `theme_color`, `display=sta
 
 ## Deploy Railway (Demo Remota)
 
-O Railway roda o NEXIS como container Node.js com SQLite persistente em volume `/data`.
+O Railway roda o NEXIS como container Docker com Node 24 e SQLite persistente em volume `/data`.
 
-Repositorio: `https://github.com/thiagocfaria/NEXT.git`
+- **Repositorio:** https://github.com/thiagocfaria/NEXT
+- **URL publica:** https://next-production-d7d8.up.railway.app
+- **Projeto Railway:** `appealing-gratitude` / servico `NEXT` / ambiente `production` / regiao `US West`
+- **Status:** deploy ativo e funcionando em 2026-05-30
 
-Passos manuais no Railway:
+Para recriar o deploy (caso necessario):
 
-1. Criar novo projeto → "Deploy from GitHub repo" → selecionar `thiagocfaria/NEXT`.
-2. Aguardar o primeiro build detectar Next.js via nixpacks.
-3. Em "Settings → Variables", adicionar as variaveis abaixo.
-4. Em "Settings → Volumes", criar volume montado em `/data`.
-5. Aguardar o redeploy automatico apos salvar as variaveis.
-6. Acessar o link publico gerado pelo Railway.
-7. No celular: abrir o link, instalar como PWA pela opcao do navegador.
+1. Criar novo projeto Railway → "Deploy from GitHub repo" → selecionar `thiagocfaria/NEXT`.
+2. Railway detecta `railway.json` e usa o `Dockerfile` com `node:24-bookworm-slim`.
+3. Em **Settings → Variables**, adicionar as variaveis abaixo.
+4. Em **Settings → Volumes**, criar volume montado em **`/data`** (obrigatorio para persistencia).
+5. Em **Settings → Networking**, configurar dominio publico apontando para porta **`8080`**.
+6. Aguardar o redeploy automatico.
+7. Acessar a URL publica e instalar como PWA no celular.
 
 Variaveis obrigatorias no Railway:
 
