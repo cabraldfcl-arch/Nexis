@@ -1027,6 +1027,37 @@ Validacao executada nesta etapa:
 - smoke HTTP em `/sales`, `/purchases`, `/expenses`, `/reports` e `/low-stock`: rotas reconhecidas, mas responderam 500 porque o servidor tambem nao encontrou `.prisma/client/default`;
 - E2E nao executado porque a geracao do Prisma Client e requisito do servidor de teste.
 
+## Atualizacao - Persistencia PostgreSQL na Vercel
+
+Data: 2026-06-10.
+
+Estado novo:
+
+- o erro `SQLITE_CANTOPEN` na Vercel foi corrigido na arquitetura: o runtime seleciona `@prisma/adapter-pg` para `postgres://`/`postgresql://` e preserva `@prisma/adapter-better-sqlite3` apenas para URLs locais `file:`;
+- criado schema de producao em `prisma/postgresql/schema.prisma`, alinhado aos modelos e enums do schema SQLite local;
+- migrations PostgreSQL isoladas em `prisma/postgresql/migrations/`, sem misturar SQL dos dois providers;
+- criado `prisma.postgresql.config.ts`;
+- criado `vercel.json` com build `npm run vercel-build`;
+- o build Vercel gera o client PostgreSQL, aplica migrations pendentes e compila o Next.js;
+- adicionados `@prisma/adapter-pg`, `pg` e tipos do driver;
+- `DATABASE_URL` na Vercel agora deve obrigatoriamente ser uma URL PostgreSQL persistente;
+- o deploy Vercel inicia com banco vazio e nao executa seed demo automaticamente;
+- SQLite continua sendo o banco local, dos testes e da demo Railway com volume;
+- autenticacao, multiempresa e backup continuam pendentes, portanto o deploy ainda deve usar somente dados ficticios.
+
+Validacao parcial executada:
+
+- `npx prisma validate --schema prisma/schema.prisma`: passou;
+- `npx prisma validate --config prisma.postgresql.config.ts`: passou;
+- `npx prisma generate --config prisma.postgresql.config.ts`: passou;
+- `npm run typecheck`: passou.
+
+Pendente nesta rodada:
+
+- validar migrations contra uma instancia PostgreSQL real;
+- executar gates completos apos regenerar o client SQLite local;
+- autenticar GitHub/Vercel, enviar o commit e validar a URL publica.
+
 ## Proxima Ordem Recomendada
 
 1. Validar demo no celular real pelo link publico e instalar como PWA.

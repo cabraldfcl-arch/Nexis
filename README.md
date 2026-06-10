@@ -98,13 +98,17 @@ Limites da demo:
 - SQLite em volume Railway e adequado para demo; para producao real migrar para Postgres/Supabase.
 - Dados ficticios sao carregados automaticamente no primeiro boot.
 
-Preview na Vercel (alternativa sem SQLite persistente):
+## Deploy Vercel com PostgreSQL
 
-1. Crie/importa o projeto como `Next.js`.
-2. Use build command `npm run build`.
-3. Mantenha `AI_ASSISTANT_ENABLED=false` e nao configure chave real em preview publico.
-4. Use o preview para validar UI/PWA; SQLite nao e persistente em Vercel serverless.
-5. Para producao real, migrar para Postgres/Supabase, auth e separacao por usuario/empresa.
+A Vercel nao deve usar `file:./dev.db`: o filesystem serverless nao e persistente e causa `SQLITE_CANTOPEN`. O deploy usa o schema separado `prisma/postgresql/schema.prisma`, o adapter `@prisma/adapter-pg` e migrations PostgreSQL isoladas.
+
+1. Importe este repositorio como projeto Next.js na Vercel.
+2. Adicione um banco PostgreSQL gerenciado pelo Marketplace da Vercel, Neon, Supabase ou equivalente.
+3. Configure `DATABASE_URL` com a URL `postgresql://...` em Production e Preview.
+4. Mantenha o Build Command como `npm run vercel-build`, tambem definido em `vercel.json`.
+5. Faça o deploy. O build gera o Prisma Client PostgreSQL, aplica migrations pendentes e executa `next build`.
+
+O banco inicia vazio. Nenhum seed de demonstracao e aplicado automaticamente na Vercel. O deploy continua sem autenticacao e multiempresa, portanto use somente dados ficticios.
 
 ## Comandos
 
@@ -133,6 +137,7 @@ npm run audio:check-betkol
 - Tailwind CSS
 - Prisma 7
 - SQLite local no MVP demonstravel
+- PostgreSQL persistente no deploy Vercel
 - Zod
 - Vitest
 - Playwright
@@ -165,7 +170,6 @@ npm run audio:check-betkol
 - Receita de servico sem estoque.
 - Correcao granular/edicao assistida alem do cancelamento rastreavel atual.
 - Voz real preenchendo rascunhos.
-- Persistencia de producao em Postgres/Supabase.
 - Autenticacao, multiempresa, backup e deploy operacional.
 
 ## Regras Financeiras

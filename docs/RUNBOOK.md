@@ -40,13 +40,15 @@ npm run build
 npx next start --hostname 0.0.0.0 --port 3000
 ```
 
-Publicar preview demonstrativo na Vercel:
+Publicar na Vercel com persistencia PostgreSQL:
 
 1. Criar/importar o projeto como `Next.js`.
-2. Usar build command `npm run build`.
-3. Manter `AI_ASSISTANT_ENABLED=false` no preview publico.
-4. Nao configurar `AI_API_KEY` real em ambiente publico de demo.
-5. Usar o preview para demonstrar UI/PWA; SQLite local nao e persistencia real em Vercel/serverless.
+2. Provisionar PostgreSQL pelo Marketplace da Vercel, Neon, Supabase ou equivalente.
+3. Configurar `DATABASE_URL=postgresql://...` em Production e Preview.
+4. Usar `npm run vercel-build`; `vercel.json` ja define esse comando.
+5. O build gera o client com `prisma.postgresql.config.ts`, aplica as migrations em `prisma/postgresql/migrations/` e compila o Next.js.
+6. Nunca usar `file:./dev.db` na Vercel; isso causa `SQLITE_CANTOPEN` ou perda de dados no filesystem efemero.
+7. O banco PostgreSQL inicia vazio e nao recebe seed automaticamente.
 
 Abrir e instalar no celular:
 

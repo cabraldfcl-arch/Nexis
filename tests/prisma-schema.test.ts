@@ -2,6 +2,7 @@ import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 
 const schema = readFileSync("prisma/schema.prisma", "utf8");
+const postgresqlSchema = readFileSync("prisma/postgresql/schema.prisma", "utf8");
 
 describe("Prisma schema", () => {
   it("defines the minimum MVP data models", () => {
@@ -49,5 +50,18 @@ describe("Prisma schema", () => {
     expect(schema).toContain("normalizedName String");
     expect(schema).toContain("normalizedAlias String");
     expect(schema).toContain("origin");
+  });
+
+  it("keeps the Vercel PostgreSQL schema aligned with the local SQLite schema", () => {
+    expect(schema).toContain('provider = "sqlite"');
+    expect(postgresqlSchema).toContain('provider = "postgresql"');
+
+    for (const model of schema.matchAll(/^model (\w+)/gm)) {
+      expect(postgresqlSchema).toContain(`model ${model[1]}`);
+    }
+
+    for (const enumName of schema.matchAll(/^enum (\w+)/gm)) {
+      expect(postgresqlSchema).toContain(`enum ${enumName[1]}`);
+    }
   });
 });
