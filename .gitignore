@@ -55,3 +55,4 @@ tests/ai/conversation-engine-corpus.test.ts
 tests/e2e/assistant-human-business-flow.spec.ts
 tests/e2e/assistant-human-conversation.spec.ts
 tests/e2e/assistant-required-business-scenarios.spec.ts
+.vercel
