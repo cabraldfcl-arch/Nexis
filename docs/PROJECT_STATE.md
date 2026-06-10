@@ -1045,18 +1045,23 @@ Estado novo:
 - SQLite continua sendo o banco local, dos testes e da demo Railway com volume;
 - autenticacao, multiempresa e backup continuam pendentes, portanto o deploy ainda deve usar somente dados ficticios.
 
-Validacao parcial executada:
+Validacao executada:
 
 - `npx prisma validate --schema prisma/schema.prisma`: passou;
 - `npx prisma validate --config prisma.postgresql.config.ts`: passou;
 - `npx prisma generate --config prisma.postgresql.config.ts`: passou;
-- `npm run typecheck`: passou.
-
-Pendente nesta rodada:
-
-- validar migrations contra uma instancia PostgreSQL real;
-- executar gates completos apos regenerar o client SQLite local;
-- autenticar GitHub/Vercel, enviar o commit e validar a URL publica.
+- `npm run lint`: passou;
+- `npm run typecheck`: passou;
+- `npm run test`: passou com 30 arquivos e 226 testes;
+- `npm run build`: passou;
+- `git diff --check`: passou;
+- Prisma Postgres `prisma-postgres-cyclamen-coin` provisionado e conectado a Production e Preview;
+- migration inicial PostgreSQL aplicada no banco real;
+- primeira tentativa de migration falhou porque o SQL havia sido gerado com BOM UTF-8; o arquivo foi normalizado para UTF-8 sem BOM, a tentativa sem passos aplicados foi marcada como revertida e a migration passou;
+- deploy de producao Vercel `dpl_CZNyvvwN2TkgtKw8Gwv9Fyt3nuZf`: passou;
+- dominio de producao: `https://nexis-swart.vercel.app`;
+- `/`, `/sales`, `/products` e `/assistant`: responderam HTTP 200 apos o deploy;
+- commits enviados para `main`: `f69d9d4`, `ee0664d` e `181e544`.
 
 ## Proxima Ordem Recomendada
 
